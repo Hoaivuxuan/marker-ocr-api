@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "marker-api"
+version = "0.1.0"
+description = "Scalable API for marker to convert PDF to markdown"
+authors = ["adithya-s-k <adithyaskolavi@gmail.com>"]
+readme = "README.md"
+packages = [{include = "marker_api"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+fastapi = "^0.115.0"
+uvicorn = "^0.31.1"
+celery = {extras = ["redis"], version = "=5.3.6"}
+flower = "^2.0.1"
+hf-transfer = "^0.1.8"
+huggingface-hub = "^0.25.1"
+locust = "^2.31.8"
+python-multipart = "^0.0.12"
+redis = "^5.1.1"
+requests = "^2.32.3"
+rich = "^13.9.2"
+marker-pdf = "^0.2.17"
+pynvml = "^11.5.3"
+art = "^6.3"
+gradio = "^5.1.0"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
