@@ -61,3 +61,5 @@ celery -A marker_api.celery_worker.celery_app worker --pool=solo --loglevel=info
 docker exec -it redis-marker redis-cli FLUSHALL
 docker exec -it redis-marker redis-cli FLUSHDB
 docker restart redis-marker
+
+marker /home/dataq/marker-system/marker-api/input /home/dataq/marker-system/marker-api/output --workers 4 --max 10 --metadata_file metadata_template.json

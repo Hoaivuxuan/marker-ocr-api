@@ -1,3 +1,14 @@
+---
+fileid: '5589'
+filename: certificates.pdf
+nextcloud_link: https://files.dataq.vn/s/mLs7SEakDkyyTad
+origin: nextcloud
+path: files/PDF/certificates.pdf
+tags:
+- pdf
+user: admin
+---
+
 
 
 ![0_image_0.png](0_image_0.png)

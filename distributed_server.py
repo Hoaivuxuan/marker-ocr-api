@@ -262,17 +262,17 @@ def setup_routes(app: FastAPI, celery_live: bool):
     if celery_live:
         logger.info("Adding Celery routes")
 
-        @app.post("/convert", response_model=ConversionResponse)
-        async def convert_pdf(pdf_file: UploadFile = File(...)):
-            return await celery_convert_pdf_concurrent_await(pdf_file)
+        # @app.post("/convert", response_model=ConversionResponse)
+        # async def convert_pdf(pdf_file: UploadFile = File(...)):
+        #     return await celery_convert_pdf_concurrent_await(pdf_file)
 
-        @app.post("/celery/convert", response_model=CeleryTaskResponse)
-        async def celery_convert(pdf_file: UploadFile = File(...)):
-            return await celery_convert_pdf(pdf_file)
+        # @app.post("/celery/convert", response_model=CeleryTaskResponse)
+        # async def celery_convert(pdf_file: UploadFile = File(...)):
+        #     return await celery_convert_pdf(pdf_file)
 
-        @app.get("/celery/result/{task_id}", response_model=CeleryResultResponse)
-        async def get_celery_result(task_id: str):
-            return await celery_result(task_id)
+        # @app.get("/celery/result/{task_id}", response_model=CeleryResultResponse)
+        # async def get_celery_result(task_id: str):
+        #     return await celery_result(task_id)
 
         @app.post("/batch_convert", response_model=BatchConversionResponse)
         async def batch_convert(pdf_files: List[UploadFile] = File(...)):
