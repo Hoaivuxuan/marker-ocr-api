@@ -26,6 +26,9 @@ from marker_api.model.schema import (
     HealthResponse,
     ServerType,
 )
+from fastapi import UploadFile
+from starlette.datastructures import Headers
+import io
 from typing import List
 from webdav3.client import Client
 import os
@@ -273,6 +276,7 @@ def setup_routes(app: FastAPI, celery_live: bool):
 
         @app.post("/batch_convert", response_model=BatchConversionResponse)
         async def batch_convert(pdf_files: List[UploadFile] = File(...)):
+            print("Check pdf_files:", pdf_files)
             return await celery_batch_convert(pdf_files)
 
         @app.get("/batch_convert/result/{task_id}", response_model=BatchResultResponse)
@@ -282,7 +286,25 @@ def setup_routes(app: FastAPI, celery_live: bool):
         # New
         @app.post("/batch_convert_local", response_model=BatchConversionResponse)
         async def batch_convert_local():
-            return await celery_batch_convert_local()
+            input_folder = "input"
+            pdf_files = []
+            for filename in os.listdir(input_folder):
+                if filename.lower().endswith(".pdf"):
+                    file_path = os.path.join(input_folder, filename)
+                    with open(file_path, "rb") as f:
+                        file_bytes = f.read()
+                        # Tạo UploadFile giả lập
+                        upload_file = UploadFile(
+                            filename=filename,
+                            file=io.BytesIO(file_bytes),
+                            headers=Headers({
+                                "content-disposition": f'form-data; name="pdf_files"; filename="{filename}"',
+                                "content-type": "application/pdf"
+                            })
+                        )
+                        pdf_files.append(upload_file)
+            print("Check pdf_files:", pdf_files)
+            return await celery_batch_convert(pdf_files)
         
         logger.info("Adding real-time conversion route")
     else:

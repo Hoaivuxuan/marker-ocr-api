@@ -119,31 +119,16 @@ async def celery_batch_convert(pdf_files: List[UploadFile] = File(...)):
     return {"task_id": str(task.id), "status": "Processing", "total": len(batch_data)}
 
 
-def run_command(command, cwd=None):
-    print(f"Running: {command}")
-    try:
-        result = subprocess.run(
-            command,
-            shell=True,
-            cwd=cwd,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        print("✅ Completed")
-        print(result.stdout)
-    except subprocess.CalledProcessError as e:
-        print("❌ Error:")
-        print(e.stderr)
+async def celery_batch_convert_local(pdf_files: List[UploadFile] = File(...)):
+    batch_data = []
+    for pdf_file in pdf_files:
+        contents = await pdf_file.read()
+        batch_data.append((pdf_file.filename, contents))
 
+    # Start a single task to process the entire batch
+    task = process_batch.delay(batch_data)
 
-async def celery_batch_convert_local():
-    marker_cmd = (
-        "marker G:/dataQ/marker-build/input G:/dataQ/marker-build/output "
-        "--workers 4 --max 10 --metadata_file metadata_template.json"
-    )
-    run_command(marker_cmd)
+    return {"task_id": str(task.id), "status": "Processing", "total": len(batch_data)}
 
 
 async def celery_batch_result(task_id: str):
