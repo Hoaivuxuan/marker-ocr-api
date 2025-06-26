@@ -293,7 +293,6 @@ def setup_routes(app: FastAPI, celery_live: bool):
                     file_path = os.path.join(input_folder, filename)
                     with open(file_path, "rb") as f:
                         file_bytes = f.read()
-                        # Tạo UploadFile giả lập
                         upload_file = UploadFile(
                             filename=filename,
                             file=io.BytesIO(file_bytes),

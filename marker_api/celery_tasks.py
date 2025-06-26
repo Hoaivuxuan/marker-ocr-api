@@ -8,6 +8,7 @@ from marker_api.utils import process_image_to_base64
 from celery.signals import worker_process_init
 import json
 import os
+from marker.output import markdown_exists, save_markdown
 
 logger = logging.getLogger(__name__)
 
@@ -46,11 +47,19 @@ class PDFConversionTask(Task):
 )
 def convert_pdf_to_markdown(self, filename, pdf_content):
     pdf_file = io.BytesIO(pdf_content)
+    out_folder = '/home/dataq/marker-system/marker-api/output'
     # 
     print("Check metadata_dict:", metadata_dict)
     metadata = metadata_dict.get(filename, {})
     print("Check metadata:", metadata)
-    markdown_text, images, out_metadata = convert_single_pdf(pdf_file, model_list)
+    markdown_text, images, out_metadata = convert_single_pdf(pdf_file, model_list, metadata=metadata)
+    if len(markdown_text.strip()) > 0:
+        # Merge custom metadata with out_metadata
+        if metadata:
+            out_metadata.update(metadata)
+        save_markdown(out_folder, filename, markdown_text, images, metadata)
+    else:
+        print(f"Empty file. Could not convert.")
     merged_metadata = {**out_metadata, **metadata}
     image_data = {}
     for i, (img_filename, image) in enumerate(images.items()):
@@ -61,7 +70,7 @@ def convert_pdf_to_markdown(self, filename, pdf_content):
     return {
         "filename": filename,
         "markdown": markdown_text,
-        "metadata": merged_metadata,
+        "metadata": metadata,
         "images": image_data,
         "status": "ok",
     }
