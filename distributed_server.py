@@ -12,7 +12,7 @@ from marker_api.celery_routes import (
     celery_convert_pdf,
     celery_result,
     celery_convert_pdf_concurrent_await,
-    celery_batch_convert,
+    celery_batch_convert,   
     celery_batch_result,
 )
 import gradio as gr

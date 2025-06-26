@@ -1,4 +1,3 @@
-import subprocess
 from fastapi import UploadFile, File
 from celery.result import AsyncResult
 from fastapi.responses import JSONResponse
@@ -141,11 +140,10 @@ def run_command(command, cwd=None):
 
 async def celery_batch_convert_local():
     marker_cmd = (
-        "marker G:/dataQ/marker-system/marker-api/input G:/dataQ/marker-system/marker-api/output "
+        "marker G:/dataQ/marker-build/input G:/dataQ/marker-build/output "
         "--workers 4 --max 10 --metadata_file metadata_template.json"
     )
     run_command(marker_cmd)
-    return {"task_id": str(task.id), "status": "Processing", "total": len(batch_data)}
 
 
 async def celery_batch_result(task_id: str):

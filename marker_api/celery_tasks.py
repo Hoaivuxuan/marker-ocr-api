@@ -6,18 +6,28 @@ import io
 import logging
 from marker_api.utils import process_image_to_base64
 from celery.signals import worker_process_init
+import json
+import os
 
 logger = logging.getLogger(__name__)
 
 model_list = None
+metadata_dict = None
 
 
 @worker_process_init.connect
 def initialize_models(**kwargs):
-    global model_list
+    global model_list, metadata_dict
     if not model_list:
         model_list = load_all_models()
         print("Models loaded at worker startup")
+    if metadata_dict is None:
+        metadata_path = os.path.join(os.path.dirname(__file__), '../metadata_template.json')
+        with open(metadata_path, 'r') as f:
+            metadata_dict = json.load(f)
+        print("Check metadata_path:", metadata_path)
+        print("Check metadata_dict:", metadata_dict.get('certificates.pdf', {}))
+        print("Metadata loaded at worker startup")
 
 
 class PDFConversionTask(Task):
@@ -36,7 +46,12 @@ class PDFConversionTask(Task):
 )
 def convert_pdf_to_markdown(self, filename, pdf_content):
     pdf_file = io.BytesIO(pdf_content)
-    markdown_text, images, metadata = convert_single_pdf(pdf_file, model_list)
+    # 
+    print("Check metadata_dict:", metadata_dict)
+    metadata = metadata_dict.get(filename, {})
+    print("Check metadata:", metadata)
+    markdown_text, images, out_metadata = convert_single_pdf(pdf_file, model_list)
+    merged_metadata = {**out_metadata, **metadata}
     image_data = {}
     for i, (img_filename, image) in enumerate(images.items()):
         logger.debug(f"Processing image {img_filename}")
@@ -46,7 +61,7 @@ def convert_pdf_to_markdown(self, filename, pdf_content):
     return {
         "filename": filename,
         "markdown": markdown_text,
-        "metadata": metadata,
+        "metadata": merged_metadata,
         "images": image_data,
         "status": "ok",
     }

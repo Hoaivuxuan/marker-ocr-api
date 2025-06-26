@@ -1,0 +1,63 @@
+nextcloud note:
+
+docker run -it --rm -v ${PWD}:/app -w /app -p 8686:8686 node:20-alpine sh -c "npm run serve"
+
+docker exec -u root -it nextcloud php occ app:enable deckdev
+
+docker exec -u www-data -it nextcloud php occ status
+
+docker run --rm -v $(pwd):/app -w /app composer composer install --no-dev
+docker run --rm -v "${PWD}":/app -w /app node:20-alpine sh -c "npm ci"
+docker run --rm -v "${PWD}":/app -w /app node:20-alpine sh -c "npm run dev"
+docker run --rm -v "${PWD}":/app -w /app node:20-alpine sh -c "npm run watch"
+docker run --rm -v "${PWD}":/app -w /app node:20-alpine sh -c "npm run build"
+
+php occ app:enable deck
+
+cd /tmp/deck
+npm run build
+cp js/* /var/www/html/custom_apps/deck/js/ -f
+
+sudo usermod -aG www-data vuxuanhoai02
+sudo chown -R vuxuanhoai02:vuxuanhoai02 /var/www/html/nextcloud/apps/deckdev
+sudo chmod -R u+w /var/www/html/nextcloud/apps/deckdev
+
+docker system prune -a -f --volumes
+
+# Build the Docker image
+docker build -t my-marker .
+
+# Run the container with sample.docx
+docker run -v "$(pwd):/app" my-marker sample.docx FILEID123 user123 /path/to/meta https://nextcloud.example.com origin123 "tag1,tag2"
+
+# Build lại Docker image
+docker build -t marker-converter .
+
+# Chạy container với volume mount cho thư mục file và out
+docker run -v "$(pwd)/file:/app/file" -v "$(pwd)/out:/app/out" marker-converter
+
+docker run -v ./pdf:/pdf jdamp/marker:latest poetry run python convert_single.py /pdf/r240123b.pdf /pdf/r240123b.md --max_pages 5
+
+python -m venv marker-env
+marker-env\Scripts\activate or source marker-env/bin/activate
+git clone https://github.com/dataelement/marker.git
+cd marker
+pip install -e .
+marker_single G:/dataQ/marker-build/file/certificates.pdf G:/dataQ/marker-build/file --batch_multiplier 2 --max_pages 10
+marker G:/dataQ/marker-build/input G:/dataQ/marker-build/output --workers 4 --max 10 --metadata_file metadata_template.json
+TORCH_DEVICE=cuda marker G:/dataQ/marker-build/input G:/dataQ/marker-build/output --workers 1 --batch_multiplier 3
+METADATA_FILE=metadata_template.json NUM_DEVICES=2 NUM_WORKERS=6 marker_chunk_convert G:/dataQ/marker-build/input G:/dataQ/marker-build/output
+
+🔥🔥🔥
+docker run -d --name redis-marker -p 6379:6379 redis:7-alpine
+
+pip install webdavclient3==3.14.6
+venv\Scripts\activate or source marker-env/bin/activate
+celery -A marker_api.celery_worker.celery_app worker --pool=solo --loglevel=info --concurrency=1
+celery -A marker_api.celery_worker.celery_app flower --port=5555 --broker=redis://localhost:6379/0
+python distributed_server.py --host 0.0.0.0 --port 8080
+celery -A marker_api.celery_worker.celery_app worker --pool=solo --loglevel=info --concurrency=1
+
+docker exec -it redis-marker redis-cli FLUSHALL
+docker exec -it redis-marker redis-cli FLUSHDB
+docker restart redis-marker
