@@ -39,10 +39,10 @@ docker run -v "$(pwd)/file:/app/file" -v "$(pwd)/out:/app/out" marker-converter
 docker run -v ./pdf:/pdf jdamp/marker:latest poetry run python convert_single.py /pdf/r240123b.pdf /pdf/r240123b.md --max_pages 5
 
 python -m venv marker-env
-marker-env\Scripts\activate or source marker-env/bin/activate
+marker-env\Scripts\activate or source marker-env/bin/active
 git clone https://github.com/dataelement/marker.git
 cd marker
-pip install -e .
+pip install -e . webdavclient3==3.14.6 transformers==4.36.2 surya-ocr==0.5.0
 marker_single G:/dataQ/marker-build/file/certificates.pdf G:/dataQ/marker-build/file --batch_multiplier 2 --max_pages 10
 marker G:/dataQ/marker-build/input G:/dataQ/marker-build/output --workers 4 --max 10 --metadata_file metadata_template.json
 TORCH_DEVICE=cuda marker G:/dataQ/marker-build/input G:/dataQ/marker-build/output --workers 1 --batch_multiplier 3
@@ -50,9 +50,12 @@ METADATA_FILE=metadata_template.json NUM_DEVICES=2 NUM_WORKERS=6 marker_chunk_co
 
 🔥🔥🔥
 docker run -d --name redis-marker -p 6379:6379 redis:7-alpine
+docker run -d -p 6379:6379 redis
 
-pip install webdavclient3==3.14.6
-venv\Scripts\activate or source marker-env/bin/activate
+marker-env\Scripts\activate
+venv\Scripts\
+pip install -e .
+pip install marker-pdf==0.2.17 webdavclient3==3.14.6 surya-ocr==0.5.0 transformers==4.36.2 texify==0.1.10
 celery -A marker_api.celery_worker.celery_app worker --pool=solo --loglevel=info --concurrency=1
 celery -A marker_api.celery_worker.celery_app flower --port=5555 --broker=redis://localhost:6379/0
 python distributed_server.py --host 0.0.0.0 --port 8080
@@ -62,4 +65,6 @@ docker exec -it redis-marker redis-cli FLUSHALL
 docker exec -it redis-marker redis-cli FLUSHDB
 docker restart redis-marker
 
-marker /home/dataq/marker-system/marker-api/input /home/dataq/marker-system/marker-api/output --workers 4 --max 10 --metadata_file metadata_template.json
+marker G:/dataQ/marker-system/marker-api/input G:/dataQ/marker-system/marker-api/output --workers 4 --max 10 --metadata_file metadata_template.json
+
+docker-compose -f docker-compose.gpu.yml up --build
