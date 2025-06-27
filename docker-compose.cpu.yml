@@ -1,10 +1,8 @@
-version: "3.8"
-
 services:
   celery_worker:
     build:
-      context: .  # Keep the build context as the root directory
-      dockerfile: docker/Dockerfile.cpu.distributed-server  # Specify the new path to the CPU Dockerfile
+      context: . # Keep the build context as the root directory
+      dockerfile: docker/Dockerfile.cpu.distributed-server # Specify the new path to the CPU Dockerfile
     image: marker-api-cpu-image
     command: celery -A marker_api.celery_worker.celery_app worker --pool=solo -n worker_primary --loglevel=info
     volumes:
@@ -18,7 +16,7 @@ services:
 
   app:
     container_name: marker-api-cpu
-    image: marker-api-cpu-image 
+    image: marker-api-cpu-image
     command: python distributed_server.py --host 0.0.0.0 --port 8080
     environment:
       - ENV=production
@@ -35,7 +33,6 @@ services:
     image: redis:7.2.4-alpine
     ports:
       - "6379:6379"
-
 
   flower:
     container_name: flower_cpu
