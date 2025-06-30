@@ -86,7 +86,7 @@ def save_markdown(out_folder, fname, full_text, images, out_metadata):
 )
 def convert_pdf_to_markdown(self, filename, pdf_content):
     pdf_file = io.BytesIO(pdf_content)
-    out_folder = '/home/dataq/marker-system/marker-api/output'
+    out_folder = 'G:\dataQ\marker-ocr-api\output'
     # 
     print("Check metadata_dict:", metadata_dict)
     metadata = metadata_dict.get(filename, {})

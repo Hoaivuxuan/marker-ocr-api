@@ -119,18 +119,6 @@ async def celery_batch_convert(pdf_files: List[UploadFile] = File(...)):
     return {"task_id": str(task.id), "status": "Processing", "total": len(batch_data)}
 
 
-async def celery_batch_convert_local(pdf_files: List[UploadFile] = File(...)):
-    batch_data = []
-    for pdf_file in pdf_files:
-        contents = await pdf_file.read()
-        batch_data.append((pdf_file.filename, contents))
-
-    # Start a single task to process the entire batch
-    task = process_batch.delay(batch_data)
-
-    return {"task_id": str(task.id), "status": "Processing", "total": len(batch_data)}
-
-
 async def celery_batch_result(task_id: str):
     task = AsyncResult(task_id)
 

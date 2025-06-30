@@ -8,7 +8,6 @@ from marker_api.celery_worker import celery_app
 from marker_api.utils import print_markerapi_text_art
 from marker.logger import configure_logging
 from marker_api.celery_routes import (
-    celery_batch_convert_local,
     celery_convert_pdf,
     celery_result,
     celery_convert_pdf_concurrent_await,
