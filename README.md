@@ -461,12 +461,6 @@ The weights for the models are licensed under cc-by-nc-sa-4.0. However, this res
 Please refer to [Marker](https://github.com/VikParuchuri/marker) for more Information about the License of the Model weights
 
 
-
-## Acknowledgements
-
-This project is a fork of [marker](https://github.com/VikParuchuri/marker) project created by [VikParuchuri](https://twitter.com/VikParuchuri).
-
-
 <p align="center">
   <a href="https://adithyask.com">
     <img src="https://api.star-history.com/svg?repos=adithya-s-k/marker-api&type=Date" alt="Star History Chart">
